@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         source:
-         #- { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
+          - { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
           - { cache: conduit, repo: "gitlab:famedly/conduit", ref: master }
 
         config:
