@@ -30,7 +30,7 @@ jobs:
           - { os: macos-14, system: aarch64-darwin }
 
     env:
-      KEEP_FOR: --keep-days 7
+      KEEP_FOR: --keep-revisions 3
 
     name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}#${{ matrix.source.ref }}"
     runs-on: ${{ matrix.config.os }}
