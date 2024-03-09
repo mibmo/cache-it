@@ -29,6 +29,9 @@ jobs:
           - { os: macos-latest,  system: x86_64-darwin }
           - { os: macos-14, system: aarch64-darwin }
 
+    env:
+      KEEP_FOR: --keep-days 7
+
     name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}#${{ matrix.source.ref }}"
     runs-on: ${{ matrix.config.os }}
     steps:
@@ -54,4 +57,4 @@ jobs:
       - name: Push store path to cachix
         run: cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
       - name: Pin store path on cachix
-        run: cachix pin ${{ matrix.source.cache}} ${{ matrix.config.system }}-${{ matrix.source.ref }} $(readlink -f ./result) --keep-days 7
+        run: cachix pin ${{ matrix.source.cache}} ${{ matrix.config.system }}-${{ matrix.source.ref }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
