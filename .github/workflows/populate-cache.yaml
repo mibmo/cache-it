@@ -19,10 +19,10 @@ jobs:
 
         config:
           - { os: ubuntu-latest, system: x86_64-linux }
-         #- { os: ubuntu-latest, system: aarch64-linux }
-         #- { os: macos-latest,  system: x86_64-darwin }
+          - { os: ubuntu-latest, system: aarch64-linux }
+          - { os: macos-latest,  system: x86_64-darwin }
            # would use macos-latest-xlarge, but it's expensive
-         #- { os: flyci-macos-large-latest-m1, system: aarch64-darwin }
+          - { os: flyci-macos-large-latest-m1, system: aarch64-darwin }
     name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}#${{ matrix.source.ref }}"
     runs-on: ${{ matrix.config.os }}
     steps:
