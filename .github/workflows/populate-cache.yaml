@@ -1,0 +1,51 @@
+name: "Populate binary cache"
+
+on:
+  schedule:
+    - cron: '00 00 * * *'
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      # dont fail just because one system doesn't build
+      fail-fast: false
+      matrix:
+        source:
+         #- { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
+          - { cache: conduit, repo: "gitlab:famedly/conduit", ref: master }
+
+        config:
+          - { os: ubuntu-latest, system: x86_64-linux }
+         #- { os: ubuntu-latest, system: aarch64-linux }
+         #- { os: macos-latest,  system: x86_64-darwin }
+           # would use macos-latest-xlarge, but it's expensive
+         #- { os: flyci-macos-large-latest-m1, system: aarch64-darwin }
+    name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}#${{ matrix.source.ref }}"
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - name: Set environment
+        run: |
+          cache=$(echo "${{ matrix.source.cache }}" | tr '-' '_' | tr '[:lower:]' '[:upper:]')
+          echo "CACHE_SECRET_KEY=CACHIX_AUTH_$cache" >> $GITHUB_ENV
+      - uses: docker/setup-qemu-action@v3
+        if: matrix.config.system == 'aarch64-linux'
+      - uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: extra-platforms = ${{ matrix.config.system }}
+      - uses: cachix/cachix-action@v14
+        with:
+          name: ${{ matrix.source.cache }}
+          authToken: ${{ secrets[env.CACHE_SECRET_KEY] }}
+          extraPullNames: nix-community,crane
+      - name: Build ${{ matrix.source.repo }}#${{ matrix.source.ref }}
+        run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#packages.${{ matrix.config.system }}.default
+      # pushing is automatically done by cachix-action's post-run, but to pin a path it needs to
+      # exist first the post-run push will report "path already exists" and can be safely ignored
+      - name: Push store path to cachix
+        run: cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
+      - name: Pin store path on cachix
+        run: cachix pin ${{ matrix.source.cache}} ${{ matrix.config.system }}-$(git rev-parse --short HEAD) $(readlink -f ./result) --keep-days 7
