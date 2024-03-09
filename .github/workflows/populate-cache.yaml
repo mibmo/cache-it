@@ -55,10 +55,10 @@ jobs:
         run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#packages.${{ matrix.config.system }}.default
       # pushing is automatically done by cachix-action's post-run, but to pin a path it needs to
       # exist first the post-run push will report "path already exists" and can be safely ignored
-      - name: Push store path to cachix
-        run: cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
-      - name: Pin store path on cachix
-        run: cachix pin ${{ matrix.source.cache }} ${{ env.PIN_BASE }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
+      - name: Pin result
+        run: |
+          cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
+          cachix pin ${{ matrix.source.cache }} ${{ env.PIN_BASE }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
 
       # source-specific steps
       - name: Pin Conduit dependencies
