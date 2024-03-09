@@ -16,6 +16,7 @@ jobs:
         source:
           - { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
           - { cache: conduit, repo: "gitlab:famedly/conduit", ref: master }
+          - { cache: conduit, repo: "gitlab:famedly/conduit", ref: next }
 
         exclude:
           # conduit doesn't support darwin
