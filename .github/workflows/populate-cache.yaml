@@ -17,6 +17,11 @@ jobs:
           - { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
           - { cache: conduit, repo: "gitlab:famedly/conduit", ref: master }
 
+        exclude:
+          # conduit doesn't support darwin
+          - { source: { cache: conduit }, config: { system: x86_64-darwin } }
+          - { source: { cache: conduit }, config: { system: aarch64-darwin } }
+
         config:
           - { os: ubuntu-latest, system: x86_64-linux }
           - { os: ubuntu-latest, system: aarch64-linux }
