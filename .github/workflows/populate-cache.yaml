@@ -39,6 +39,7 @@ jobs:
         run: |
           cache=$(echo "${{ matrix.source.cache }}" | tr '-' '_' | tr '[:lower:]' '[:upper:]')
           echo "CACHE_SECRET_KEY=CACHIX_AUTH_$cache" >> $GITHUB_ENV
+          echo "PIN_BASE=${{ matrix.config.system }}-${{ matrix.source.ref }}" >> $GITHUB_ENV
       - uses: docker/setup-qemu-action@v3
         if: matrix.config.system == 'aarch64-linux'
       - uses: cachix/install-nix-action@v25
@@ -57,4 +58,12 @@ jobs:
       - name: Push store path to cachix
         run: cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
       - name: Pin store path on cachix
-        run: cachix pin ${{ matrix.source.cache}} ${{ matrix.config.system }}-${{ matrix.source.ref }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
+        run: cachix pin ${{ matrix.source.cache }} ${{ env.PIN_BASE }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
+
+      # source-specific steps
+      - name: Pin Conduit dependencies
+        if: matrix.source.cache == 'conduit'
+        run: |
+          nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#packages.${{ matrix.config.system }}.default.cargoArtifacts
+          cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
+          cachix pin ${{ matrix.source.cache }} ${{ env.PIN_BASE }}-deps $(readlink -f ./result) ${{ env.KEEP_FOR }}
