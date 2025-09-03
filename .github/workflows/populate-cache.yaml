@@ -62,7 +62,7 @@ jobs:
           build_attr: ${{ matrix.source.repo == 'github:nixos/nixpkgs' && 'legacyPackages' || 'packages' }}.${{ matrix.config.system }}.${{ matrix.source.package || 'default' }}
         run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ env.build_attr }}
       # pushing is automatically done by cachix-action's post-run, but to pin a path it needs to
-      # exist first the post-run push will report "path already exists" and can be safely ignored
+      # exist first. the post-run push will report "path already exists" which can be safely ignored
       - name: Pin result
         run: |
           cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
