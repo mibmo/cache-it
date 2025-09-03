@@ -64,6 +64,8 @@ jobs:
       # pushing is automatically done by cachix-action's post-run, but to pin a path it needs to
       # exist first. the post-run push will report "path already exists" which can be safely ignored
       - name: Pin result
+        # temporarily disable, as cachix seems to be broken
+        if: false
         run: |
           cachix push ${{ matrix.source.cache }} $(readlink -f ./result)
           cachix pin ${{ matrix.source.cache }} ${{ env.PIN_BASE }} $(readlink -f ./result) ${{ env.KEEP_FOR }}
