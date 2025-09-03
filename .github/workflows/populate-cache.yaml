@@ -17,7 +17,9 @@ jobs:
           - { cache: deploy-rs, repo: "github:serokell/deploy-rs", ref: master }
           - { cache: conduit, repo: "gitlab:famedly/conduit", ref: master }
           - { cache: conduit, repo: "gitlab:famedly/conduit", ref: next }
+          - { cache: zfs, repo: "github:nixos/nixpkgs", ref: nixpkgs-unstable, package: "linuxPackages.zfs_unstable" }
           - { cache: zfs, repo: "github:nixos/nixpkgs", ref: nixpkgs-unstable, package: "linuxPackages.zfs_2_3" }
+          - { cache: zfs, repo: "github:nixos/nixpkgs", ref: nixpkgs-unstable, package: "linuxPackages.zfs_2_2" }
 
         exclude:
           # conduit doesn't support darwin
