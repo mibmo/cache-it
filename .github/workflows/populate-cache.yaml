@@ -38,7 +38,7 @@ jobs:
     env:
       KEEP_FOR: --keep-revisions 3
 
-    name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}#${{ matrix.source.ref }}"
+    name: "[${{ matrix.config.system }}] ${{ matrix.source.repo }}/${{ matrix.source.ref }} [${{ matrix.source.package || 'default' }}]"
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Set environment
