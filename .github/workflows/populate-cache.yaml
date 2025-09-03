@@ -51,8 +51,10 @@ jobs:
           name: ${{ matrix.source.cache }}
           authToken: ${{ secrets[env.CACHE_SECRET_KEY] }}
           extraPullNames: nix-community,crane
-      - name: Build ${{ matrix.source.repo }}#${{ matrix.source.ref }}
-        run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#packages.${{ matrix.config.system }}.default
+      - name: Build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ matrix.source.package || 'default' }}
+        env:
+          build_attr: ${{ matrix.source.repo == 'github:nixos/nixpkgs' && 'legacyPackages' || 'packages' }}.${{ matrix.config.system }}.${{ matrix.source.package || 'default' }}
+        run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ env.build_attr }}
       # pushing is automatically done by cachix-action's post-run, but to pin a path it needs to
       # exist first the post-run push will report "path already exists" and can be safely ignored
       - name: Pin result
