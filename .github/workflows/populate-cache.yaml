@@ -57,7 +57,7 @@ jobs:
           name: ${{ matrix.source.cache }}
           authToken: ${{ secrets[env.CACHE_SECRET_KEY] }}
           extraPullNames: nix-community,crane
-      - name: Build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ matrix.source.package || 'default' }}
+      - name: Build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ env.build_attr }}
         env:
           build_attr: ${{ matrix.source.repo == 'github:nixos/nixpkgs' && 'legacyPackages' || 'packages' }}.${{ matrix.config.system }}.${{ matrix.source.package || 'default' }}
         run: nix build ${{ matrix.source.repo }}/${{ matrix.source.ref }}#${{ env.build_attr }}
